@@ -1,0 +1,19 @@
+{
+  "name": "zoom-api",
+  "version": "1.0.0",
+  "description": "Zoom APIs for Mobile App",
+  "main": "index.js",
+  "scripts": {
+    "test": "test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gtindi/Zoom-API.git"
+  },
+  "author": "Gabriel Tindi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Gtindi/Zoom-API/issues"
+  },
+  "homepage": "https://github.com/Gtindi/Zoom-API#readme"
+}

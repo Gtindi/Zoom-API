@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const axios = require('axios');
 const mongoose = require('mongoose');
@@ -8,12 +7,16 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
+mongoose.connect('mongodb://127.0.0.1:27017/zoom', {
   useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error(err));
+  useUnifiedTopology: true
+});
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => {
+  console.log('Connected to MongoDB');
+});
+
 
 // Define a Zoom Meeting schema
 const MeetingSchema = new mongoose.Schema({
@@ -68,6 +71,6 @@ app.post('/api/meetings', async (req, res) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5050;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 

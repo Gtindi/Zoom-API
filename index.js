@@ -2,6 +2,10 @@ const express = require('express');
 const axios = require('axios');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const Zoom = require('zoomus')({
+  key: 'YOUR_ZOOM_API_KEY',
+  secret: 'YOUR_ZOOM_API_SECRET'
+});
 
 // Load environment variables
 dotenv.config();
@@ -14,9 +18,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/zoom', {
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => {
-  console.log('Connected to MongoDB');
+  console.log('Connected to MongoDB!!!');
 });
-
 
 // Define a Zoom Meeting schema
 const MeetingSchema = new mongoose.Schema({
@@ -36,28 +39,23 @@ const app = express();
 // Define a route to create a new meeting
 app.post('/api/meetings', async (req, res) => {
   try {
-    // Make a request to the Zoom API to create a new meeting
-    const response = await axios.post('https://api.zoom.us/v2/users/me/meetings', {
+    // Create a new Zoom meeting using the Zoom API code
+    const zoomMeeting = await Zoom.meeting.create({
       topic: req.body.topic,
-      type: 2,
       start_time: req.body.start_time,
       duration: req.body.duration,
       password: req.body.password,
       settings: req.body.settings,
-    }, {
-      headers: {
-        'Authorization': `Bearer ${process.env.ZOOM_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
+      host_id: 'YOUR_ZOOM_USER_ID'
     });
 
     // Create a new meeting document in MongoDB
     const meeting = new Meeting({
-      topic: response.data.topic,
-      start_time: response.data.start_time,
-      duration: response.data.duration,
-      password: response.data.password,
-      settings: response.data.settings,
+      topic: zoomMeeting.topic,
+      start_time: zoomMeeting.start_time,
+      duration: zoomMeeting.duration,
+      password: zoomMeeting.password,
+      settings: zoomMeeting.settings,
     });
 
     await meeting.save();
@@ -73,4 +71,3 @@ app.post('/api/meetings', async (req, res) => {
 // Start the server
 const PORT = process.env.PORT || 5050;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
-
